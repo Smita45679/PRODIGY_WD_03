@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tic-Tac-Toe Task-03</title>
+  <style>
+    /* Background and body styling */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+      overflow: hidden;
+      color: white;
+      text-align: center;
+    }
+
+    /* Star animations */
+    .stars {
+      width: 2px;
+      height: 2px;
+      background: white;
+      position: absolute;
+      animation: moveStars linear infinite;
+      border-radius: 50%;
+    }
+
+    @keyframes moveStars {
+      0% {
+        transform: translateY(0px);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh);
+        opacity: 0;
+      }
+    }
+
+    /* Game board styling */
+    #game {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      gap: 5px;
+      background-color: rgba(51, 51, 51, 0.8);
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+      z-index: 2;
+    }
+
+    .cell {
+      width: 100px;
+      height: 100px;
+      font-size: 2em;
+      color: #0ff;
+      text-align: center;
+      line-height: 100px;
+      border: 2px solid #00ffff66;
+      background-color: #111;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .cell:hover {
+      background-color: #222;
+      transform: scale(1.05);
+    }
+
+    .cell:active {
+      background-color: #444;
+      transform: scale(0.95);
+    }
+
+    #status {
+      font-size: 1.5em;
+      margin-top: 20px;
+      font-weight: bold;
+      color: #0ff;
+      text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
+      z-index: 2;
+    }
+
+    button {
+      background-color: #00ffcc;
+      color: #000;
+      font-size: 1.2em;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      margin-top: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 15px #00ffcc;
+      transition: background-color 0.3s ease;
+      z-index: 2;
+    }
+
+    button:hover {
+      background-color: #00ccaa;
+    }
+
+    button:focus {
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <div id="game">
+      <div class="cell" data-index="0"></div>
+      <div class="cell" data-index="1"></div>
+      <div class="cell" data-index="2"></div>
+      <div class="cell" data-index="3"></div>
+      <div class="cell" data-index="4"></div>
+      <div class="cell" data-index="5"></div>
+      <div class="cell" data-index="6"></div>
+      <div class="cell" data-index="7"></div>
+      <div class="cell" data-index="8"></div>
+    </div>
+    <p id="status">X's turn</p>
+    <button onclick="restartGame()">Restart</button>
+  </div>
+
+  <!-- Star animation generator -->
+  <script>
+    for (let i = 0; i < 100; i++) {
+      let star = document.createElement("div");
+      star.className = "stars";
+      star.style.left = Math.random() * 100 + "vw";
+      star.style.top = Math.random() * 100 + "vh";
+      star.style.animationDuration = Math.random() * 5 + 3 + "s";
+      document.body.appendChild(star);
+    }
+  </script>
+
+  <!-- Game Logic -->
+  <script>
+    let board = ["", "", "", "", "", "", "", "", ""];
+    let currentPlayer = "X";
+    let gameActive = true;
+
+    const statusText = document.getElementById("status");
+    const cells = document.querySelectorAll(".cell");
+
+    const winConditions = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8],
+      [0, 3, 6], [1, 4, 7], [2, 5, 8],
+      [0, 4, 8], [2, 4, 6]
+    ];
+
+    function handleClick(e) {
+      const index = e.target.dataset.index;
+      if (board[index] !== "" || !gameActive) return;
+
+      board[index] = currentPlayer;
+      e.target.textContent = currentPlayer;
+
+      if (checkWin()) {
+        statusText.textContent = `${currentPlayer} wins!`;
+        gameActive = false;
+      } else if (!board.includes("")) {
+        statusText.textContent = "It's a draw!";
+        gameActive = false;
+      } else {
+        currentPlayer = currentPlayer === "X" ? "O" : "X";
+        statusText.textContent = `${currentPlayer}'s turn`;
+      }
+    }
+
+    function checkWin() {
+      return winConditions.some(combination => {
+        return combination.every(index => board[index] === currentPlayer);
+      });
+    }
+
+    function restartGame() {
+      board = ["", "", "", "", "", "", "", "", ""];
+      currentPlayer = "X";
+      gameActive = true;
+      statusText.textContent = `${currentPlayer}'s turn`;
+      cells.forEach(cell => cell.textContent = "");
+    }
+
+    cells.forEach(cell => cell.addEventListener("click", handleClick));
+  </script>
+</body>
+</html>
